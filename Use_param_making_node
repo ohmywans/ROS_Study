@@ -1,6 +1,6 @@
 Parameter -->  Parameter 을 실제로 적용하지는 않은 상태 !!!
-이전 강의에서는 작성한 서비스 서버와 클라이언트 노드에서 service_server.cpp 소스를 수정하여 서비스 요청으로 입력된 a와 b를 단순히 덧셈하는 것이 아니라, 사칙연산을 할 수 있도록 파라미터를 활용해 볼 것이다.
-다음 순서대로 service_server.cpp 소스를 수정해보자.
+이전 강의에서는 작성한 서비스 서버와 클라이언트 노드에서 service_server.cpp 소스를 수정하여 서비스 요청으로 입력된 a와 b를 단순히 덧셈하는 것이 아니라, 
+사칙연산을 할 수 있도록 파라미터를 활용해 볼 것이다. 다음 순서대로 service_server.cpp 소스를 수정해보자.
 
 $ roscd ros_tutorials_service/src
 $ gedit service_server.cpp
