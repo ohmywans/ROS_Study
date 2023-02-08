@@ -1,0 +1,276 @@
+<!--
+<ERROR : package not found> 노드 실행 시 ERROR Solution
+$ source ~/catkin_ws/devel/setup.bash
+$ rospack profile
+$ rospack find [ 찾고자하는 package name ]
+-->
+[Develop Environment]
+: [Ubuntu 20.04]
+: [ROS Noetic]
+
+<<<<<make package in ROS1>>>>>
+[생성할 패키지 이름] : ros_tutorials_topic
+[생성할 메시지 이름] : MsgTutorial.msg
+[Publisher 이름] : topic_publisher
+[Subscriber 이름] : topic_subscriber
+[주고 받을 Topic 이름] : ros_tutorial_msg
+
+
+@@@@@ 0st. $ roscore
+
+@@@@@1. Go to directory to make the package. (cd = change directory)
+$ cd ~/catkin_ws/src
+
+@@@@@2. Make package automatically, name is 'ros_tutorials_topic'
+$ catkin_create_pkg ros_tutorials_topic message_generation std_msgs roscpp
+
+FORM : catkin_create_pkg (package_name) (Using_Package_1, 2, 3 ... etc)
+-> There are no header files in folder 'include' and no source code in folder 'src'. But, 'CMakeLists.txt' and 'package.xml' have lots of contents.
+They are basic contents, when you make the package. '(Using_Package_1)' is Dependency.
+
+@@@@@3. Go to folder 'ros_tutorials_topic'
+$ cd ros_tutorials_topic
+
+@@@@@4. See the list in 'ros_tutorials_topic'. 'ls' means List in Linux.
+$ ls
+
+<Modify the 'package.xml' and 'CMakeLists.txt'>
+@@@@@5. First, you must modify the 'package.xml'. [GO TO 'package.xml']
+$ gedit package.xml
+
+@@@@@6. Last, you must modify the 'CMakeLists.txt' [GO TO 'CMakeLists.txt']
+$ gedit CMakeLists.txt
+
+When you build Pub or Sub? You have to write this FORM.
+
+@@@@@7. Write message file by 'add_message_files(FILES MsgTutorial.msg)' in 'CMakeList.txt' (When you do not need writing the message file, you pass)
+@@@7-1. Go to package folder in the Terminal. FORM : roscd (Package_name)
+$ roscd ros_tutorials_topic
+
+@@@7-2. Make a folder 'msg'
+$ mkdir msg
+
+@@@7-3. Go to folder 'msg'
+$ cd msg
+
+@@@7-4. Make a message file 'MsgTutorial.msg' in 'msg' folder. And Modifying it.
+$ gedit MsgTutorial.msg
+
+@@@7-5. In 'MsgTutorial.msg', add next text 'Type'. FORM : (Type of Message) (Name)
+time stamp
+int32 data
+
+@@@@@8. WRITE Publisher node by 'add_executable(topic_publisher src/topic_publisher.cpp)' in 'CMakeLists.txt'.
+@@@8-1. Go to folder 'src' of the package in Terminal.
+$ roscd ros_tutorials_topic/src
+
+@@@8-2. Make a source file 'topic_publisher.cpp' in 'src' folder. And Modifying it.  [GO TO 'topic_publisher.cpp']
+$ gedit topic_publisher.cpp
+
+@@@@@9. WRITE Subscriber node by 'add_executable(topic_subscriber src/topic_subscriber.cpp)' in 'CMakeLists.txt'.
+@@@9-1. Go to folder 'src' of the package in Terminal.
+$ roscd ros_tutorials_topic/src
+
+@@@9-2. Make a source file 'topic_subscriber.cpp' in 'src' folder. And Modifying it. [GO TO 'topic_subscriber.cpp']
+$ gedit topic_subscriber.cpp
+
+@@@@@10. Go to 'catkin_ws' in Terminal.
+$ cd catkin_ws
+
+@@@@@11. Do catkin_make !
+$ catkin_make
+
+- /build 폴더에는 캐킨 빌드에서 사용된 설정 내용이 저장
+- catkin_ws/devel/include/ros_tutorials_topic 폴더에는 메시지 파일로부터 자동 생성된 메시지 헤더 파일 'MsgTutorial.h'이 저장
+- catkin_ws/devel/lib/ros_tutorials_topic 폴더에는 실행 파일 'topic_publisher', 'topic_subscriber'이 저장
+
+@@@@@12. RUN the Publisher node. Basic : $ roscore
+$ cd catkin_ws/src
+$ rosrun ros_tutorials_topic topic_publisher
+
+@@@@@13. RUN the Subscriber node.
+$ cd catkin_ws/src
+$ rosrun ros_tutorials_topic topic_subscriber
+
+When did you want to check Package, Run next text.
+$ rostopic list
+
+Check (Type of Message) and (Publisher for that Topic), (Subscriber for that Topic).
+$ rostopic info /ros_tutorial_msg(= /Topic_Name)
+
+Check (Topic Frequency) and (Data Bandwidth), other contents.. etc.
+$ rostopic echo /ros_tutorial_msg(= /Topic_Name)
+
+Check 'rqt_graph'
+$ rqt_graph
+
+- Finally, multiple 'Publisher' and 'Subscriber' can exist on the single node !
+//------------------------------------------------------------------------------------------------------------------------------
+[package.xml]
+
+<?xml version="1.0"?> // Version. don't need.
+<package>
+// package tag start.
+<name>ros_tutorials_topic</name> // catkin_create_pkg (package_name)
+<version>0.1.0</version> // Version tag. don't need. Officially need it.
+<description>ROS tutorial package to learn the topic</description> // package description. Officially need it. Wiki page.
+<license>Apache License 2.0</license> // license
+<author email="pyo@robotis.com">Yoonseok Pyo</author> // Author and author's email.
+<maintainer email="pyo@robotis.com">Yoonseok Pyo</maintainer> // Author or who.
+<url type="bugtracker">https://github.com/ROBOTIS-GIT/ros_tutorials/issues</url> // Bug tracker
+<url type="repository">https://github.com/ROBOTIS-GIT/ros_tutorials.git</url> // repository
+<url type="website">http://www.robotis.com</url> // website
+<buildtool_depend>catkin</buildtool_depend> // Only write 'catkin'. What are you gonna use to build? ROS2 is different.
+<build_depend>roscpp</build_depend> // This is a dependency, when you BUILD this pacakge.
+<build_depend>std_msgs</build_depend> // ..
+<build_depend>message_generation</build_depend> // .. (*)
+<run_depend>roscpp</run_depend> // This is a dependency, when you RUN this pacakge.
+<run_depend>std_msgs</run_depend> // ..
+<run_depend>message_runtime</run_depend> // (*)
+<export></export> //
+</package> // package tag end.
+
+(*) : When you BUILD this package, you don't need 'message_runtime'. So I didn't wrote.
+(*) : When you RUN this package, you don't need 'message_generation'. So I didn't wrote.
+
+roscpp : When you use C++ API, you must add it.
+std_msgs : When you use Int32, Float64, bool.. etc, you must add it.
+message_generation : You will make a New message. So I add it.
+
+//------------------------------------------------------------------------------------------------------------------------------
+[CMakeLists.txt] : After writing source codes, They're options required when creating nodes.
+
+cmake_minimum_required(VERSION 2.8.3) // minimum ubuntu version.
+project(ros_tutorials_topic) // You must wrote (Package_name) samely.
+## 캐킨 빌드를 할 때 요구되는 구성요소 패키지이다.
+## 의존성 패키지로 message_generation, std_msgs, roscpp이며 이 패키지들이 존재하지 않으면 빌드 도중에 에러가 난다.There should be packages for you to use.
+find_package(catkin REQUIRED COMPONENTS message_generation std_msgs roscpp)
+## 메시지 선언: MsgTutorial.msg
+add_message_files(FILES MsgTutorial.msg) // We will make the message 'MsgTutorial.msg'
+## 의존하는 메시지를 설정하는 옵션이다.
+## std_msgs가 설치되어 있지 않다면 빌드 도중에 에러가 난다.
+generate_messages(DEPENDENCIES std_msgs) // 'std_msgs' will included in message 'MsgTutorials.msg'. This is Dependency.
+## 캐킨 패키지 옵션으로 라이브러리, 캐킨 빌드 의존성, 시스템 의존 패키지를 기술한다.
+catkin_package(
+LIBRARIES ros_tutorials_topic // LIBRARIES (Package_name)
+CATKIN_DEPENDS std_msgs roscpp // CATKIN_DEPENDS (Dependency_1) (Dependency_2)
+)
+## 인클루드 디렉터리를 설정한다.
+include_directories(${catkin_INCLUDE_DIRS}) // (*)
+## topic_publisher 노드에 대한 빌드 옵션이다.
+## 실행 파일, 타깃 링크 라이브러리, 추가 의존성 등을 설정한다. <중요한 부분=""!!!> : Publisher node (**)
+add_executable(topic_publisher src/topic_publisher.cpp)
+add_dependencies(topic_publisher ${${PROJECT_NAME}_EXPORTED_TARGETS}
+${catkin_EXPORTED_TARGETS})
+target_link_libraries(topic_publisher ${catkin_LIBRARIES})
+## topic_subscriber 노드에 대한 빌드 옵션이다. <중요한 부분=""!!!> : Subscriber node (**)
+add_executable(topic_subscriber src/topic_subscriber.cpp)
+add_dependencies(topic_subscriber ${${PROJECT_NAME}_EXPORTED_TARGETS}
+${catkin_EXPORTED_TARGETS})
+target_link_libraries(topic_subscriber ${catkin_LIBRARIES})
+
+(*) include_directories(${catkin_INCLUDE_DIRS}) : 시스템 전체적으로 공유된 기존에 깔려있는 패키지들을 쓸 때
+include_directories(${catkin_INCLUDE_DIRS}) include : 'ros_tutorials_topic'패키지 폴더에 있는 'include' 폴더를 쓸 때
+
+(**) Publisher_Node FORM :
+add_executable(Publisher_Node_NAME REFERENCE_FILE_and_PATH)
+add_dependencies(Publisher_Node_NAME ${${PROJECT_NAME}_EXPORTED_TARGETS}
+${catkin_EXPORTED_TARGETS}) // To building Publisher_Node.
+target_link_libraries(Publisher_Node_NAME ${catkin_LIBRARIES}) // If you have 'target_link', write this.
+
+(**) Subscriber_Node FORM :
+add_executable(Subscriber_Node_NAME REFERENCE_FILE_and_PATH)
+add_dependencies(Subscriber_Node_NAME ${${PROJECT_NAME}_EXPORTED_TARGETS}
+${catkin_EXPORTED_TARGETS}) // To building Subscriber_Node.
+target_link_libraries(Subscriber_Node_NAME ${catkin_LIBRARIES}) // If you have 'target_link', write this.
+
+//------------------------------------------------------------------------------------------------------------------------------
+@@@@@
+[topic_publisher.cpp]
+
+#include "ros/ros.h"
+// ROS 기본 헤더파일 : ROS API
+#include "ros_tutorials_topic/MsgTutorial.h"// MsgTutorial 메시지 파일 헤더(빌드 후 자동 생성됨) 
+// When you want to use other messages, you must include any header files. FORM : #include "(Package_Name)/(Message_Header_File)"
+// 노드 메인 함수
+int main(int argc, char **argv) // Basic parameter.
+{
+ros::init(argc, argv, "topic_publisher"); // 노드명 초기화. You must Initialize (Node_Name)
+ros::NodeHandle nh; // ROS 시스템과 통신을 위한 노드 핸들 선언
+// 퍼블리셔 선언, ros_tutorials_topic 패키지의 MsgTutorial 메시지 파일을 이용한
+// 퍼블리셔 ros_tutorial_pub 를 작성한다. 토픽명은 "ros_tutorial_msg" 이며,
+// 퍼블리셔 큐(queue) 사이즈를 100개로 설정한다는 것이다 (*)
+ros::Publisher ros_tutorial_pub = nh.advertise<ros_tutorials_topic::MsgTutorial>
+("ros_tutorial_msg", 100);
+// 루프 주기를 설정한다. "10" 이라는 것은 10Hz를 말하는 것으로 0.1초 간격으로 반복된다
+ros::Rate loop_rate(10);
+							// MsgTutorial 메시지 파일 형식으로 msg 라는 메시지를 선언
+ros_tutorials_topic::MsgTutorial msg;
+// 메시지에 사용될 변수 선언
+int count = 0;
+while (ros::ok())
+{
+msg.stamp = ros::Time::now();
+msg.data = count;
+// 현재 시간을 msg의 하위 stamp 메시지에 담는다
+// count라는 변수 값을 msg의 하위 data 메시지에 담는다
+ROS_INFO("send msg = %d", msg.stamp.sec);
+ROS_INFO("send msg = %d", msg.stamp.nsec);
+ROS_INFO("send msg = %d", msg.data); // stamp.sec 메시지를 표시한다
+// stamp.nsec 메시지를 표시한다
+// data 메시지를 표시한다
+ros_tutorial_pub.publish(msg); // 메시지를 발행한다 (Publisher_Name).publish((Message));
+loop_rate.sleep(); // 위에서 정한 루프 주기에 따라 슬립에 들어간다
+++count; // count 변수 1씩 증가
+}
+return 0;
+}
+(*) ros::Publisher FORM :
+ros::Publisher (Publisher_Name) = nh.advertise<(Package_Name)::(Only_Message_Name)>
+("(Topic_Name)", (Queue_Size));
+- <(Package_Name)::(Only_Message_Name)> : Type of message to Publish.
+
+//------------------------------------------------------------------------------------------------------------------------------
+@@@@@
+[topic_subscriber.cpp]
+
+#include "ros/ros.h"
+// ROS 기본 헤더파일 : ROS API
+#include "ros_tutorials_topic/MsgTutorial.h"
+// MsgTutorial 메시지 파일 헤더 (빌드 후 자동 생성됨) When you want to use other messages, you must include any header files.
+// FORM : #include "(Package_Name)/(Message_Header_File)"
+// 메시지 콜백 함수로써, 밑에서 설정한 ros_tutorial_msg라는 이름의 토픽
+// 메시지를 수신하였을 때 동작하는 함수이다
+// 입력 메시지로는 ros_tutorials_topic 패키지의 MsgTutorial 메시지를 받도록 되어있다 (*)
+void msgCallback(const ros_tutorials_topic::MsgTutorial::ConstPtr& msg)
+{
+ROS_INFO("receive msg = %d", msg->stamp.sec);
+// stamp.sec 메시지를 표시한다
+ROS_INFO("receive msg = %d", msg->stamp.nsec);
+// stamp.nsec 메시지를 표시한다
+ROS_INFO("receive msg = %d", msg->data);
+// data 메시지를 표시한다
+}
+int main(int argc, char **argv)
+{
+ros::init(argc, argv, "topic_subscriber"); // 노드명 초기화. You must Initialize (Node_Name)
+ros::NodeHandle nh; // ROS 시스템과 통신을 위한 노드 핸들 선언
+// 노드 메인 함수
+// 서브스크라이버 선언, ros_tutorials_topic 패키지의 MsgTutorial 메시지 파일을 이용한
+// 서브스크라이버 ros_tutorial_sub 를 작성한다. 토픽명은 "ros_tutorial_msg" 이며,
+// 서브스크라이버 큐(queue) 사이즈를 100개로 설정한다는 것이다 (**)
+ros::Subscriber ros_tutorial_sub = nh.subscribe("ros_tutorial_msg", 100, msgCallback);
+// 콜백함수 호출을 위한 함수로써, 메시지가 수신되기를 대기, 수신되었을 경우 콜백함수를 실행한다
+ros::spin();
+return 0;
+}
+(*) Message_Callback_Function
+void (Callback_Name)(const (Package_Name)::(Only_Message_Name)::ConstPtr& msg) { }
+ - (Package_Name)::(Only_Message_Name) : Type of message to Publish.
+ 
+(**) ros::Subscriber FORM :
+ros::Subscriber (Subscriber_Name) = nh.subscribe("(Topic_Name)", 100, (Callback_Name)); 
+ - "(Topic_Name)" : You must write (Topic_Name) in Publisher samely.
+ - (Callback_Name) : When it subscribes the message, it is ran Callback function. 
+ //------------------------------------------------------------------------------------------------------------------------------
+ It is a summary from ROS study, alone. So, there may be some inexperienced contents. Welcome feedback.
