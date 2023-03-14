@@ -137,6 +137,15 @@ roscpp : When you use C++ API, you must add it.
 std_msgs : When you use Int32, Float64, bool.. etc, you must add it.
 message_generation : You will make a New message. So I add it.
 
+(*** 추가 ***)
+: run_depend 가 아닌 대부분 build_export_depend와 exec_depend를 쓰는 듯
+<build_depend>roscpp</build_depend>
+<build_depend>std_msgs</build_depend>
+<build_depend>message_generation</build_depend>
+<exec_depend>roscpp</exec_depend>
+<exec_depend>std_msgs</exec_depend>
+<exec_depend>message_generation</exec_depend>
+를 추가하면 되겠지. <run_depend> 대신!
 //------------------------------------------------------------------------------------------------------------------------------
 [CMakeLists.txt] : After writing source codes, They're options required when creating nodes.
 
