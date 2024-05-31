@@ -1,4 +1,4 @@
-# Study_Ubuntu_ROS
+# Study ROS
 Study alone Ubuntu and ROS.
 
 [If you ...]
